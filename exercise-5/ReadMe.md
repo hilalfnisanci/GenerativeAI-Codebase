@@ -2,7 +2,6 @@
 
 This script generates and develops children's story ideas based on a given topic using the OpenAI GPT-4 model. The script first generates a list of story ideas and then develops a full story based on a selected idea. The results are printed and saved to a text file.
 
-
 ## Requirements
 
 - Python 3.9+
