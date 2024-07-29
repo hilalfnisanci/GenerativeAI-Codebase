@@ -1,11 +1,42 @@
+# Import required libraries and modules
 import os
-from openai import OpenAI
-import csv
+import pandas as pd
+from dotenv import load_dotenv
+from langchain.chat_models import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
+# Load environment variables from a .env file
+load_dotenv()
+
+# Retrieve the OpenAI API key from environment variables
 api_key = os.getenv("OPENAI_API_KEY")
-OpenAI.api_key = api_key
-client = OpenAI()
 
+# Initialize the ChatOpenAI model with the API key and specify the GPT-4 model
+model = ChatOpenAI(api_key=api_key, model='gpt-4o')
+
+# Define the system message for the AI assistant
+system = """
+You are an AI assistant performing sentiment analysis on product reviews.
+You should analyze each review as "positive", "negative", or "neutral".
+For example;
+Review: This product is very useful. It met all my expectations. You should definitely buy it.
+Sentiment Analysis: Positive
+"""
+
+# Create a prompt template for the chat model
+prompt = ChatPromptTemplate.from_messages([
+    ("system", system),
+    ("human", "{reviews}"),
+])
+
+# Initialize the output parser
+output_parser = StrOutputParser()
+
+# Create a chain that connects the prompt, model, and output parser
+chain = prompt | model | output_parser
+
+# Define a list of reviews
 reviews = [
     "This product is amazing! It exceeded my expectations.",
     "I'm very disappointed with this purchase. It broke after one use.",
@@ -19,41 +50,35 @@ reviews = [
     "Met all my expectations. Works perfectly."
 ]
 
-def analyze_sentiment(review):
+# Combine reviews into a single string separated by newline characters
+reviews_str = "\n".join(reviews)
 
-    prompt = f"""
-    Please analyze the sentiment of the following product review and classify it as "positive", "negative", or "neutral":
-    "{review}"
-    Example: 
-    Review: "Terrible quality. Do not buy."
-    Sentiment: negative
+# Invoke the chain with the reviews and get the response
+response = chain.invoke({"reviews": reviews_str})
 
-    Review: "{review}"
-    Sentiment:"""
-    
-    messages = [
-        {"role": "system", "content": "You are an assistant that analyzes sentiment in product reviews. "},
-        {"role": "user", "content": prompt}
-    ]
+# Print the response
+print(response)
 
-    response = client.chat.completions.create(
-        model="gpt-4", 
-        messages=messages,
-        max_tokens=10
-    )
-    sentiment = response.choices[0].message.content
-    return sentiment
+# Initialize lists to store reviews and their sentiments
+yorumlar = []
+duygular = []
 
-results = []
-for review in reviews:
-    sentiment = analyze_sentiment(review)
-    results.append({'review': review, 'sentiment': sentiment})
+# Process the response to extract reviews and their sentiments
+lines = response.strip().split("\n")
+for i in range(0, len(lines), 3):
+    yorum = lines[i].replace("Review: ", "").strip()
+    duygu = lines[i+1].replace("Sentiment Analysis: ", "").strip()
+    yorumlar.append(yorum)
+    duygular.append(duygu)
 
-csv_file = 'sentiment_analysis_results.csv'
-with open(csv_file, 'w', newline='') as file:
-    writer = csv.DictWriter(file, fieldnames=['review', 'sentiment'])
-    writer.writeheader()
-    for row in results:
-        writer.writerow(row)
+# Create a DataFrame to store the reviews and their sentiments
+df = pd.DataFrame({
+    "Review": yorumlar,
+    "Sentiment Analysis": duygular
+})
 
-print(f'Sentiment analysis results saved to {csv_file}')
+# Save the DataFrame to a CSV file
+df.to_csv("sentiment_analysis_results.csv", index=False)
+
+# Print a confirmation message
+print("Sentiment analysis results saved")
