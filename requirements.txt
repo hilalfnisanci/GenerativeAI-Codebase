@@ -2,7 +2,7 @@ beautifulsoup4>=4.11.1
 bs4>=0.0.1
 faiss-cpu==1.7.2
 fitz==0.0.1.dev2
-ipython==8.4.0
+IPython>=8.10
 langchain>=0.0.182
 langchain-core>=0.0.1
 langchain-community>=0.0.1
@@ -15,5 +15,5 @@ python-dotenv==0.20.0
 pytz==2021.3
 requests>=2.32.0
 sentence-transformers==2.2.0
-streamlit==1.10.0
+streamlit>=1.30.0
 unstructured==0.1.8
