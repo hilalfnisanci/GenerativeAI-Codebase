@@ -1,6 +1,5 @@
 from openai import OpenAI
 import os
-import random
 import streamlit as st
 import time
 
