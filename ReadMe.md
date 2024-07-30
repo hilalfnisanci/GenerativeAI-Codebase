@@ -1,6 +1,6 @@
 # Overview of Generative AI Projects
 
-This repository contains a series of exercises and projects that explore various applications of generative AI, primarily using the OpenAI GPT-4 model. The projects range from introductory concepts to advanced implementations, providing a comprehensive understanding of how generative AI can be utilized in different scenarios.
+This repository contains a series of exercises and projects that explore various applications of generative AI. The projects range from introductory concepts to advanced implementations, providing a comprehensive understanding of how generative AI can be utilized in different scenarios.
 
 ## Installation
 
